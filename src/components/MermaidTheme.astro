@@ -1,0 +1,153 @@
+---
+/**
+ * Applies 墨间 light/dark Mermaid themeVariables and re-renders on theme change.
+ * Pairs with astro-mermaid (autoTheme: false) which only transforms fences → <pre.mermaid>.
+ */
+---
+
+<script>
+	import mermaid from 'mermaid';
+
+	const LIGHT = {
+		darkMode: false,
+		background: 'transparent',
+		fontFamily:
+			'"Source Sans 3", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif',
+		fontSize: '16px',
+		primaryColor: '#cfe8e4',
+		primaryTextColor: '#1a1d24',
+		primaryBorderColor: '#0b7a6f',
+		secondaryColor: '#e4e9f0',
+		secondaryTextColor: '#1a1d24',
+		secondaryBorderColor: '#7a8494',
+		tertiaryColor: '#eef1f5',
+		tertiaryTextColor: '#4a5160',
+		tertiaryBorderColor: '#a3adb9',
+		lineColor: '#4a5160',
+		textColor: '#1a1d24',
+		mainBkg: '#cfe8e4',
+		nodeBorder: '#0b7a6f',
+		clusterBkg: '#eef1f5',
+		clusterBorder: '#0b7a6f',
+		titleColor: '#1a1d24',
+		edgeLabelBackground: '#eef1f5',
+		actorBkg: '#cfe8e4',
+		actorBorder: '#0b7a6f',
+		actorTextColor: '#1a1d24',
+		actorLineColor: '#4a5160',
+		signalColor: '#1a1d24',
+		signalTextColor: '#1a1d24',
+		labelBoxBkgColor: '#eef1f5',
+		labelBoxBorderColor: '#0b7a6f',
+		labelTextColor: '#1a1d24',
+		loopTextColor: '#1a1d24',
+		noteBkgColor: '#e8edf3',
+		noteTextColor: '#1a1d24',
+		noteBorderColor: '#7a8494',
+		activationBkgColor: '#b8ddd8',
+		sequenceNumberColor: '#eef1f5',
+	};
+
+	const DARK = {
+		darkMode: true,
+		background: 'transparent',
+		fontFamily:
+			'"Source Sans 3", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif',
+		fontSize: '16px',
+		primaryColor: '#1a3d39',
+		primaryTextColor: '#e8ecf2',
+		primaryBorderColor: '#3dbaad',
+		secondaryColor: '#1a1f27',
+		secondaryTextColor: '#e8ecf2',
+		secondaryBorderColor: '#7a8494',
+		tertiaryColor: '#12151a',
+		tertiaryTextColor: '#a3adb9',
+		tertiaryBorderColor: '#4a5160',
+		lineColor: '#a3adb9',
+		textColor: '#e8ecf2',
+		mainBkg: '#1a3d39',
+		nodeBorder: '#3dbaad',
+		clusterBkg: '#161b22',
+		clusterBorder: '#3dbaad',
+		titleColor: '#e8ecf2',
+		edgeLabelBackground: '#12151a',
+		actorBkg: '#1a3d39',
+		actorBorder: '#3dbaad',
+		actorTextColor: '#e8ecf2',
+		actorLineColor: '#a3adb9',
+		signalColor: '#e8ecf2',
+		signalTextColor: '#e8ecf2',
+		labelBoxBkgColor: '#1a1f27',
+		labelBoxBorderColor: '#3dbaad',
+		labelTextColor: '#e8ecf2',
+		loopTextColor: '#e8ecf2',
+		noteBkgColor: '#222831',
+		noteTextColor: '#e8ecf2',
+		noteBorderColor: '#7a8494',
+		activationBkgColor: '#245a54',
+		sequenceNumberColor: '#12151a',
+	};
+
+	let busy = false;
+
+	function mode() {
+		return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+	}
+
+	async function renderAll() {
+		const nodes = [...document.querySelectorAll('pre.mermaid')];
+		if (!nodes.length || busy) return;
+		busy = true;
+
+		mermaid.initialize({
+			startOnLoad: false,
+			theme: 'base',
+			themeVariables: mode() === 'dark' ? DARK : LIGHT,
+			flowchart: { curve: 'basis', padding: 14, htmlLabels: true },
+			sequence: { actorMargin: 48, messageMargin: 36 },
+			securityLevel: 'strict',
+		});
+
+		try {
+			for (const diagram of nodes) {
+				if (!diagram.getAttribute('data-diagram')) {
+					diagram.setAttribute('data-diagram', diagram.textContent || '');
+				}
+				diagram.removeAttribute('data-processed');
+				const definition = diagram.getAttribute('data-diagram') || '';
+				const id = 'mojian-mmd-' + Math.random().toString(36).slice(2, 10);
+				try {
+					const { svg } = await mermaid.render(id, definition);
+					diagram.innerHTML = svg;
+					diagram.setAttribute('data-processed', 'true');
+				} catch (err) {
+					console.error('[墨间] Mermaid render failed:', err);
+				}
+			}
+		} finally {
+			busy = false;
+		}
+	}
+
+	function schedule() {
+		requestAnimationFrame(() => {
+			setTimeout(renderAll, 30);
+		});
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', schedule);
+	} else {
+		schedule();
+	}
+
+	window.addEventListener('mojian:theme', schedule);
+	document.addEventListener('astro:after-swap', schedule);
+
+	new MutationObserver((mutations) => {
+		if (mutations.some((m) => m.attributeName === 'data-theme')) schedule();
+	}).observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['data-theme'],
+	});
+</script>

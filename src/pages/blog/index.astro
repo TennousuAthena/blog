@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../consts';
+import { useTranslations } from '../../i18n/utils';
+import { postsByLang } from '../../lib/posts';
+
+const lang = 'zh' as const;
+const t = useTranslations(lang);
+const posts = postsByLang(await getCollection('blog'), lang);
+---
+
+<BaseLayout title={t('blog.title')} description={SITE.zh.description} lang={lang}>
+	<section class="page container">
+		<header class="page__header">
+			<p class="page__eyebrow anim-rise">{t('blog.eyebrow')}</p>
+			<h1 class="anim-rise" style="animation-delay: 60ms">{t('blog.title')}</h1>
+			<p class="page__lede anim-rise" style="animation-delay: 120ms">{t('blog.lede')}</p>
+		</header>
+
+		<div class="page__list">
+			{
+				posts.map((post, i) => (
+					<PostCard
+						post={post}
+						lang={lang}
+						featured={i === 0}
+						style={`animation-delay: ${Math.min(i * 50, 300)}ms`}
+					/>
+				))
+			}
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.page {
+		padding-top: var(--space-xl);
+	}
+
+	.page__header {
+		max-width: 36rem;
+		margin-bottom: var(--space-lg);
+	}
+
+	.page__eyebrow {
+		margin: 0 0 0.65rem;
+		font-family: var(--font-code);
+		font-size: 0.78rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent-ink);
+	}
+
+	.page__lede {
+		margin: 0;
+		color: var(--ink-muted);
+	}
+
+	.page__list {
+		border-bottom: 1px solid var(--line);
+	}
+</style>

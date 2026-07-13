@@ -1,0 +1,59 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import MermaidTheme from '../components/MermaidTheme.astro';
+import type { ImageMetadata } from 'astro';
+import type { Lang } from '../i18n/ui';
+import { htmlLang, useTranslations } from '../i18n/utils';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	lang?: Lang;
+}
+
+const { title, description, image, lang = 'zh' } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<!doctype html>
+<html lang={htmlLang(lang)}>
+	<head>
+		<BaseHead title={title} description={description} image={image} lang={lang} />
+	</head>
+	<body>
+		<a class="skip-link" href="#main">{t('skip')}</a>
+		<Header lang={lang} />
+		<main id="main">
+			<slot />
+		</main>
+		<Footer lang={lang} />
+		<MermaidTheme />
+	</body>
+</html>
+
+<style is:global>
+	.skip-link {
+		position: absolute;
+		left: 1rem;
+		top: -3rem;
+		z-index: 100;
+		padding: 0.5rem 0.85rem;
+		background: var(--ink);
+		color: var(--paper);
+		text-decoration: none;
+		border-radius: var(--radius);
+		transition: top 160ms var(--ease-out);
+	}
+
+	.skip-link:focus {
+		top: 1rem;
+	}
+
+	main {
+		min-height: 60vh;
+		padding-bottom: var(--space-2xl);
+	}
+</style>

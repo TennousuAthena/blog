@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../consts';
+import { useTranslations } from '../../i18n/utils';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={t('about.title')} description={SITE.en.description} lang={lang}>
+	<section class="about container--narrow">
+		<header class="about__header">
+			<p class="about__eyebrow anim-rise">{t('about.eyebrow')}</p>
+			<h1 class="anim-rise" style="animation-delay: 60ms">{t('about.title')}</h1>
+			<p class="about__lede anim-rise" style="animation-delay: 120ms">{t('about.lede')}</p>
+			<span class="about__rule anim-fade" aria-hidden="true"></span>
+		</header>
+
+		<div class="prose about__body anim-rise" style="animation-delay: 180ms">
+			<p>
+				Ink Atelier pairs expressive Latin display type with Noto CJK faces, tuned line-height, and
+				mixed-script rhythm so Chinese and English can share one reading surface.
+			</p>
+			<p>
+				The theme ships with bilingual routing, light/dark tokens, and
+				<a href="https://cwd.js.org/" target="_blank" rel="noopener noreferrer">CWD</a>
+				comments — the widget theme is remapped to the same jade/mist palette via <code>customCssUrl</code>.
+			</p>
+			<h2>Use it for</h2>
+			<ul>
+				<li>Personal craft blogs and design notes</li>
+				<li>Lightweight design-system documentation</li>
+				<li>Bilingual portfolio / writing hubs</li>
+			</ul>
+			<h2>Stack</h2>
+			<ul>
+				<li>Astro + Content Collections + MDX + i18n</li>
+				<li>CSS design tokens (light / dark)</li>
+				<li>CWD comments on Cloudflare Workers</li>
+			</ul>
+			<p>
+				Write in <code>src/content/blog/</code> with <code>lang</code> and optional
+				<code>translationKey</code> so locales share one comment thread.
+			</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.about {
+		padding-top: var(--space-xl);
+		margin-inline: auto;
+	}
+
+	.about__eyebrow {
+		margin: 0 0 0.65rem;
+		font-family: var(--font-code);
+		font-size: 0.78rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent-ink);
+	}
+
+	.about__lede {
+		margin: 0;
+		color: var(--ink-muted);
+		font-size: 1.08rem;
+	}
+
+	.about__rule {
+		display: block;
+		width: 3.5rem;
+		height: 2px;
+		margin: 1.5rem 0 2rem;
+		background: var(--accent);
+		transform-origin: left;
+		animation: draw-line var(--duration) var(--ease-out) 260ms both;
+	}
+</style>

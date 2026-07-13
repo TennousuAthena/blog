@@ -1,0 +1,43 @@
+---
+title: '在文章里嵌入 TradingView K 线'
+description: '用 TradingViewChart 组件为任意标的嵌入可交互蜡烛图，并跟随墨间日夜间主题。'
+pubDate: '2026-07-13'
+heroImage: '../../assets/blog-placeholder-4.jpg'
+tags: ['Astro', 'MDX', 'TradingView']
+featured: false
+lang: 'zh'
+translationKey: 'tradingview-chart'
+---
+
+import TradingViewChart from '../../components/TradingViewChart.astro';
+
+本主题提供 `TradingViewChart` 组件，基于 [TradingView Advanced Chart](https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/) 免费嵌入，默认展示 **K 线（蜡烛图）**。
+
+## 比特币 · 1 小时
+
+<TradingViewChart symbol="BINANCE:BTCUSDT" interval="60" />
+
+## 苹果 · 日线
+
+<TradingViewChart symbol="NASDAQ:AAPL" interval="D" />
+
+## 在 MDX 中使用
+
+```mdx
+import TradingViewChart from '../../components/TradingViewChart.astro';
+
+<TradingViewChart symbol="BINANCE:BTCUSDT" interval="60" />
+```
+
+常用属性：
+
+| 属性 | 说明 | 默认 |
+| --- | --- | --- |
+| `symbol` | 标的，如 `NASDAQ:AAPL`、`SSE:600519` | 必填 |
+| `interval` | `1` / `5` / `15` / `60` / `D` / `W` | `D` |
+| `locale` | 界面语言 | `zh_CN` |
+| `style` | `1` = K 线 | `1` |
+
+图表区域按容器宽度保持 **4:3** 比例，随版面自适应。
+
+切换站点日夜间时，图表会重新挂载以匹配主题。

@@ -1,0 +1,147 @@
+---
+import { CWD } from '../consts';
+import type { Lang } from '../i18n/ui';
+import { cwdLang, useTranslations } from '../i18n/utils';
+
+interface Props {
+	lang: Lang;
+	postSlug: string;
+	postTitle: string;
+}
+
+const { lang, postSlug, postTitle } = Astro.props;
+const t = useTranslations(lang);
+const configured = Boolean(CWD.apiBaseUrl);
+const widgetSrc = `https://unpkg.com/cwd-widget@${CWD.widgetVersion}/dist/cwd.js`;
+const customCssUrl = new URL('/cwd-theme.css', Astro.site).href;
+const widgetLang = cwdLang(lang);
+---
+
+<section class="comments" aria-labelledby="comments-heading">
+	<div class="comments__head container--narrow">
+		<h2 id="comments-heading">{t('comments.title')}</h2>
+		<span class="comments__rule" aria-hidden="true"></span>
+	</div>
+
+	<div class="comments__body container--narrow">
+		{
+			configured ? (
+				<div
+					id="cwd-comments"
+					data-cwd-root
+					data-api={CWD.apiBaseUrl}
+					data-site={CWD.siteId}
+					data-slug={postSlug}
+					data-title={postTitle}
+					data-lang={widgetLang}
+					data-css={customCssUrl}
+				/>
+			) : (
+				<div class="comments__setup">
+					<p>{t('comments.setup')}</p>
+					<a href="https://cwd.js.org/guide/frontend-config.html" target="_blank" rel="noopener noreferrer">
+						{t('comments.docs')} →
+					</a>
+				</div>
+			)
+		}
+	</div>
+</section>
+
+{
+	configured && (
+		<>
+			<script src={widgetSrc} is:inline></script>
+			<script is:inline>
+				(function () {
+					function boot() {
+						const root = document.querySelector('[data-cwd-root]');
+						const Ctor = window.CWDComments;
+						if (!root || typeof Ctor !== 'function') return;
+
+						const theme =
+							document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+
+						const comments = new Ctor({
+							el: root,
+							apiBaseUrl: root.getAttribute('data-api'),
+							siteId: root.getAttribute('data-site') || undefined,
+							postSlug: root.getAttribute('data-slug') || undefined,
+							postTitle: root.getAttribute('data-title') || undefined,
+							lang: root.getAttribute('data-lang') || 'auto',
+							theme: theme,
+							customCssUrl: root.getAttribute('data-css') || undefined,
+							pageSize: 20,
+						});
+						comments.mount();
+						window.__mojianCwd = comments;
+
+						window.addEventListener('mojian:theme', function (event) {
+							const next = event.detail && event.detail.theme === 'dark' ? 'dark' : 'light';
+							comments.updateConfig({ theme: next });
+						});
+					}
+
+					if (document.readyState === 'loading') {
+						document.addEventListener('DOMContentLoaded', boot);
+					} else {
+						boot();
+					}
+				})();
+			</script>
+		</>
+	)
+}
+
+<style>
+	.comments {
+		padding: var(--space-xl) 0 var(--space-2xl);
+		border-top: 1px solid var(--line);
+		margin-top: var(--space-lg);
+	}
+
+	.comments__head {
+		margin-inline: auto;
+		margin-bottom: 1.25rem;
+	}
+
+	.comments__head h2 {
+		margin: 0 0 0.85rem;
+		font-size: 1.35rem;
+		letter-spacing: 0.08em;
+	}
+
+	.comments__rule {
+		display: block;
+		width: 3.5rem;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.comments__body {
+		margin-inline: auto;
+	}
+
+	.comments__setup {
+		padding: 1.35rem 1.25rem;
+		border: 1px dashed var(--line-strong);
+		background: var(--surface);
+		color: var(--ink-muted);
+		font-size: 0.98rem;
+		line-height: 1.7;
+	}
+
+	.comments__setup p {
+		margin: 0 0 0.75rem;
+	}
+
+	.comments__setup a {
+		text-decoration: none;
+		color: var(--accent-ink);
+		letter-spacing: 0.02em;
+	}
+
+	#cwd-comments {
+		min-height: 8rem;
+	}
+</style>

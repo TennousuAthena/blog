@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'zh' as const;
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={t('about.title')} description={SITE.zh.description} lang={lang}>
+	<section class="about container--narrow">
+		<header class="about__header">
+			<p class="about__eyebrow anim-rise">{t('about.eyebrow')}</p>
+			<h1 class="anim-rise" style="animation-delay: 60ms">{t('about.title')}</h1>
+			<p class="about__lede anim-rise" style="animation-delay: 120ms">{t('about.lede')}</p>
+			<span class="about__rule anim-fade" aria-hidden="true"></span>
+		</header>
+
+		<div class="prose about__body anim-rise" style="animation-delay: 180ms">
+			<p>
+				「墨间」关注中文阅读体验：衬线标题与无衬线正文成对出现，行高、字距与段落节奏按中文阅读习惯调整，并保留英文与代码混排的清晰度。
+			</p>
+			<p>
+				主题支持中英双语、日夜间切换，以及基于
+				<a href="https://cwd.js.org/" target="_blank" rel="noopener noreferrer">CWD</a>
+				的评论系统——评论区样式通过 customCss 与站点设计令牌对齐。
+			</p>
+			<h2>你可以用它做什么</h2>
+			<ul>
+				<li>个人技术博客 / 设计笔记</li>
+				<li>团队设计系统与组件文档的轻量站点</li>
+				<li>中英双语内容的内容型作品集入口</li>
+			</ul>
+			<h2>技术栈</h2>
+			<ul>
+				<li>Astro + Content Collections + MDX + i18n</li>
+				<li>原生 CSS 设计令牌（日间 / 夜间）</li>
+				<li>CWD 评论（Cloudflare Workers）</li>
+			</ul>
+			<p>
+				开始写作：在 <code>src/content/blog/</code> 新增 Markdown 或 MDX，填写
+				<code>lang</code> 与可选的 <code>translationKey</code> 即可。
+			</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.about {
+		padding-top: var(--space-xl);
+		margin-inline: auto;
+	}
+
+	.about__eyebrow {
+		margin: 0 0 0.65rem;
+		font-family: var(--font-code);
+		font-size: 0.78rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent-ink);
+	}
+
+	.about__lede {
+		margin: 0;
+		color: var(--ink-muted);
+		font-size: 1.08rem;
+	}
+
+	.about__rule {
+		display: block;
+		width: 3.5rem;
+		height: 2px;
+		margin: 1.5rem 0 2rem;
+		background: var(--accent);
+		transform-origin: left;
+		animation: draw-line var(--duration) var(--ease-out) 260ms both;
+	}
+</style>

@@ -1,0 +1,230 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../consts';
+import { localePath, useTranslations } from '../../i18n/utils';
+import { postsByLang } from '../../lib/posts';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const posts = postsByLang(await getCollection('blog'), lang);
+const featured = posts.find((p) => p.data.featured) ?? posts[0];
+const rest = posts.filter((p) => p.id !== featured?.id).slice(0, 4);
+---
+
+<BaseLayout title={SITE.en.title} description={SITE.en.description} lang={lang}>
+	<section class="hero">
+		<div class="hero__atmosphere" aria-hidden="true">
+			<span class="hero__glyph">墨</span>
+			<span class="hero__grid"></span>
+		</div>
+		<div class="hero__content container">
+			<p class="hero__brand anim-rise">
+				<span>{SITE.en.title}</span>
+				<span class="hero__brand-en">{SITE.en.titleEn}</span>
+			</p>
+			<h1 class="hero__headline anim-rise" style="animation-delay: 80ms" set:html={t('home.headline')} />
+			<p class="hero__lede anim-rise" style="animation-delay: 140ms">{t('home.lede')}</p>
+			<div class="hero__actions anim-rise" style="animation-delay: 200ms">
+				<a class="btn btn--primary" href={localePath('/blog', lang)}>{t('home.cta.blog')}</a>
+				<a class="btn btn--ghost" href={localePath('/about', lang)}>{t('home.cta.about')}</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="latest container">
+		<div class="section-head">
+			<h2>{t('home.latest')}</h2>
+			<a class="section-head__link" href={localePath('/blog', lang)}>{t('home.all')}</a>
+		</div>
+		<div class="latest__list">
+			{featured && <PostCard post={featured} lang={lang} featured style="animation-delay: 40ms" />}
+			{
+				rest.map((post, i) => (
+					<PostCard post={post} lang={lang} style={`animation-delay: ${(i + 2) * 60}ms`} />
+				))
+			}
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		position: relative;
+		isolation: isolate;
+		min-height: min(88vh, 52rem);
+		display: grid;
+		align-items: end;
+		padding: var(--space-2xl) 0 var(--space-xl);
+		overflow: hidden;
+	}
+
+	.hero__atmosphere {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+	}
+
+	.hero__glyph {
+		position: absolute;
+		right: max(-4vw, calc(50% - 34rem));
+		top: 8%;
+		font-family: var(--font-display);
+		font-size: clamp(14rem, 28vw, 26rem);
+		line-height: 0.85;
+		color: color-mix(in srgb, var(--ink) 7%, transparent);
+		letter-spacing: -0.06em;
+		user-select: none;
+		animation: fade 1.2s var(--ease-out) both;
+	}
+
+	.hero__grid {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(color-mix(in srgb, var(--ink) 5%, transparent) 1px, transparent 1px),
+			linear-gradient(90deg, color-mix(in srgb, var(--ink) 5%, transparent) 1px, transparent 1px);
+		background-size: 72px 72px;
+		mask-image: radial-gradient(ellipse 70% 60% at 70% 35%, black 10%, transparent 70%);
+		opacity: 0.7;
+	}
+
+	.hero__content {
+		max-width: 44rem;
+		padding-bottom: var(--space-lg);
+	}
+
+	.hero__brand {
+		display: flex;
+		align-items: baseline;
+		gap: 0.85rem;
+		margin: 0 0 1.25rem;
+		font-family: var(--font-display);
+		font-size: clamp(2.8rem, 2rem + 3vw, 4.2rem);
+		letter-spacing: 0.16em;
+		line-height: 1;
+	}
+
+	.hero__brand-en {
+		font-family: var(--font-sans);
+		font-size: 0.72rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.hero__headline {
+		margin: 0 0 1rem;
+		font-size: clamp(1.55rem, 1.2rem + 1.5vw, 2.25rem);
+		font-weight: 500;
+		line-height: 1.4;
+		letter-spacing: 0.04em;
+	}
+
+	.hero__lede {
+		margin: 0 0 1.75rem;
+		max-width: 30rem;
+		color: var(--ink-muted);
+		font-size: 1.05rem;
+	}
+
+	.hero__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1rem;
+	}
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.85rem;
+		padding: 0.55rem 1.25rem;
+		text-decoration: none;
+		letter-spacing: 0.06em;
+		font-size: 0.95rem;
+		border-radius: var(--radius);
+		transition:
+			background var(--duration) var(--ease-out),
+			color var(--duration) var(--ease-out),
+			border-color var(--duration) var(--ease-out),
+			transform var(--duration) var(--ease-out);
+	}
+
+	.btn--primary {
+		background: var(--ink);
+		color: var(--paper);
+		border: 1px solid var(--ink);
+	}
+
+	.btn--primary:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: white;
+		transform: translateY(-1px);
+	}
+
+	.btn--ghost {
+		background: transparent;
+		color: var(--ink-muted);
+		border: 1px solid var(--line-strong);
+	}
+
+	.btn--ghost:hover {
+		color: var(--ink);
+		border-color: var(--ink-muted);
+	}
+
+	.latest {
+		padding-top: var(--space-xl);
+	}
+
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.section-head h2 {
+		margin: 0;
+		font-size: 1.15rem;
+		letter-spacing: 0.12em;
+	}
+
+	.section-head__link {
+		text-decoration: none;
+		color: var(--ink-faint);
+		font-size: 0.92rem;
+	}
+
+	.section-head__link:hover {
+		color: var(--accent);
+	}
+
+	.latest__list {
+		border-bottom: 1px solid var(--line);
+	}
+
+	@media (max-width: 720px) {
+		.hero {
+			min-height: auto;
+			padding-top: var(--space-xl);
+			align-items: start;
+		}
+
+		.hero__glyph {
+			top: 0;
+			right: -8vw;
+			opacity: 0.85;
+		}
+
+		.hero__brand {
+			flex-direction: column;
+			gap: 0.35rem;
+		}
+	}
+</style>

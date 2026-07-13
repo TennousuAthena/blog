@@ -1,0 +1,93 @@
+export const languages = {
+	zh: '中文',
+	en: 'English',
+} as const;
+
+export type Lang = keyof typeof languages;
+
+export const defaultLang: Lang = 'zh';
+
+export const ui = {
+	zh: {
+		'nav.home': '首页',
+		'nav.blog': '文章',
+		'nav.tags': '标签',
+		'nav.about': '关于',
+		'nav.rss': 'RSS',
+		'nav.open': '打开导航',
+		'nav.close': '关闭导航',
+		'nav.main': '主导航',
+		'skip': '跳到正文',
+		'theme.toLight': '切换到日间模式',
+		'theme.toDark': '切换到夜间模式',
+		'lang.switch': '语言',
+		'home.headline': '写给前端与设计师的<br />技术与审美笔记',
+		'home.lede': '在代码与视觉之间，记录可复用的排版、交互与组件语言。',
+		'home.cta.blog': '阅读文章',
+		'home.cta.about': '了解主题',
+		'home.latest': '最新文章',
+		'home.all': '全部文章 →',
+		'blog.eyebrow': 'Archive',
+		'blog.title': '文章',
+		'blog.lede': '按时间倒序排列的笔记与长文，覆盖排版、组件、设计系统与前端实践。',
+		'tags.eyebrow': 'Tags',
+		'tags.title': '标签',
+		'tags.lede': '按主题浏览文章，从排版到组件、从设计系统到工程实践。',
+		'tags.all': '全部标签',
+		'tags.count': '共 {n} 篇相关文章',
+		'about.eyebrow': 'About',
+		'about.title': '关于 墨间',
+		'about.lede': 'Ink Atelier —— 一款面向前端与设计师的 Astro 博客主题模板。',
+		'footer.tagline': '为前端与设计师而写的笔记工坊',
+		'footer.copy': '以排版与细节为先。',
+		'featured': '精选',
+		'updated': '更新于',
+		'comments.title': '评论',
+		'comments.setup':
+			'评论系统基于 CWD。请部署你的 Cloudflare Workers API，并在环境变量中设置 PUBLIC_CWD_API_BASE_URL。',
+		'comments.docs': '查看 CWD 文档',
+	},
+	en: {
+		'nav.home': 'Home',
+		'nav.blog': 'Writing',
+		'nav.tags': 'Tags',
+		'nav.about': 'About',
+		'nav.rss': 'RSS',
+		'nav.open': 'Open menu',
+		'nav.close': 'Close menu',
+		'nav.main': 'Main',
+		'skip': 'Skip to content',
+		'theme.toLight': 'Switch to light mode',
+		'theme.toDark': 'Switch to dark mode',
+		'lang.switch': 'Language',
+		'home.headline': 'Craft notes for<br />frontend & design',
+		'home.lede':
+			'Between code and visuals — reusable notes on typography, interaction, and component language.',
+		'home.cta.blog': 'Read posts',
+		'home.cta.about': 'About the theme',
+		'home.latest': 'Latest',
+		'home.all': 'All posts →',
+		'blog.eyebrow': 'Archive',
+		'blog.title': 'Writing',
+		'blog.lede':
+			'Notes and essays in reverse chronological order — typography, components, design systems, and frontend practice.',
+		'tags.eyebrow': 'Tags',
+		'tags.title': 'Tags',
+		'tags.lede': 'Browse by topic — from type to components, systems to engineering.',
+		'tags.all': 'All tags',
+		'tags.count': '{n} related posts',
+		'about.eyebrow': 'About',
+		'about.title': 'About Ink Atelier',
+		'about.lede': '墨间 — an Astro blog theme for frontend developers and designers.',
+		'footer.tagline': 'A notebook atelier for frontend & design',
+		'footer.copy': 'Typography and detail first.',
+		'featured': 'Featured',
+		'updated': 'Updated',
+		'comments.title': 'Comments',
+		'comments.setup':
+			'Comments run on CWD. Deploy your Cloudflare Workers API and set PUBLIC_CWD_API_BASE_URL.',
+		'comments.docs': 'CWD docs',
+	},
+} as const;
+
+export type UiKey = keyof (typeof ui)['zh'];

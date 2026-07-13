@@ -1,0 +1,93 @@
+---
+import type { Lang } from '../i18n/ui';
+import { localePath } from '../i18n/utils';
+
+interface Props {
+	tags: string[];
+	lang?: Lang;
+	class?: string;
+}
+
+const { tags, lang = 'zh', class: className } = Astro.props;
+---
+
+{
+	tags.length > 0 && (
+		<ul class:list={['tag-list', className]}>
+			{tags.map((tag) => (
+				<li>
+					<a href={localePath(`/tags/${encodeURIComponent(tag)}`, lang)}>
+						<span class="tag-list__hash" aria-hidden="true">
+							#
+						</span>
+						<span class="tag-list__label">{tag}</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	)
+}
+
+<style>
+	.tag-list {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.55rem 0.85rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* Override global `li + li { margin-top }` which staggered tags vertically */
+	.tag-list li,
+	.tag-list li + li {
+		display: flex;
+		align-items: center;
+		margin: 0;
+		padding: 0;
+		line-height: 1;
+	}
+
+	.tag-list a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.15em;
+		height: 1.5rem;
+		padding: 0;
+		box-sizing: border-box;
+		color: var(--ink-muted);
+		text-decoration: none;
+		font-size: 0.86rem;
+		font-weight: 400;
+		line-height: 1;
+		letter-spacing: 0.02em;
+		border-bottom: 1px solid transparent;
+		transition:
+			color var(--duration) var(--ease-out),
+			border-color var(--duration) var(--ease-out);
+	}
+
+	.tag-list__hash,
+	.tag-list__label {
+		display: inline-flex;
+		align-items: center;
+		height: 100%;
+		line-height: 1;
+	}
+
+	.tag-list__hash {
+		color: var(--accent);
+		font-family: var(--font-code);
+		font-size: 0.82em;
+	}
+
+	.tag-list a:hover {
+		color: var(--accent-ink);
+		border-bottom-color: color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+
+	.tag-list a:hover .tag-list__hash {
+		color: var(--accent-ink);
+	}
+</style>

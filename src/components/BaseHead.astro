@@ -1,0 +1,87 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import type { ImageMetadata } from 'astro';
+import FallbackImage from '../assets/blog-placeholder-1.jpg';
+import { SITE_TITLE } from '../consts';
+import type { Lang } from '../i18n/ui';
+import { htmlLang } from '../i18n/utils';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	lang?: Lang;
+	ogLocale?: string;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const {
+	title,
+	description,
+	image = FallbackImage,
+	lang = 'zh',
+	ogLocale = lang === 'zh' ? 'zh_CN' : 'en_US',
+} = Astro.props;
+const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#eef1f5" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+	rel="alternate"
+	type="application/rss+xml"
+	title={SITE_TITLE}
+	href={new URL('rss.xml', Astro.site)}
+/>
+<link rel="alternate" hreflang="zh-CN" href={new URL(Astro.url.pathname.replace(/^\/en/, '') || '/', Astro.site)} />
+<link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? Astro.url.pathname : `/en${Astro.url.pathname === '/' ? '/' : Astro.url.pathname}`, Astro.site)} />
+<meta name="generator" content={Astro.generator} />
+
+<script is:inline>
+	(function () {
+		try {
+			var stored = localStorage.getItem('mojian-theme');
+			var theme =
+				stored === 'light' || stored === 'dark'
+					? stored
+					: window.matchMedia('(prefers-color-scheme: dark)').matches
+						? 'dark'
+						: 'light';
+			document.documentElement.setAttribute('data-theme', theme);
+			document.documentElement.style.colorScheme = theme;
+		} catch (e) {
+			document.documentElement.setAttribute('data-theme', 'light');
+		}
+	})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+	rel="stylesheet"
+/>
+
+<link rel="canonical" href={canonicalURL} />
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={SITE_TITLE} />
+
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:image" content={new URL(image.src, Astro.url)} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(image.src, Astro.url)} />

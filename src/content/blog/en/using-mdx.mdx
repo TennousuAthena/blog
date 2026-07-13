@@ -1,0 +1,26 @@
+---
+title: 'Embedding Components in MDX'
+description: 'Markdown for narrative, MDX for interaction — this theme ships with @astrojs/mdx.'
+pubDate: '2026-06-01'
+heroImage: '../../../assets/blog-placeholder-5.jpg'
+tags: ['Astro', 'MDX', 'Frontend']
+featured: false
+lang: 'en'
+translationKey: 'using-mdx'
+---
+
+import HeaderLink from '../../../components/HeaderLink.astro';
+
+This theme includes [MDX](https://docs.astro.build/en/guides/integrations-guide/mdx/). Import Astro components when a post needs a live example beside the prose.
+
+## Example
+
+<HeaderLink href="#" onclick="alert('Demo component clicked')">Embedded MDX component</HeaderLink>
+
+## Guidance
+
+- Keep argument and narrative in Markdown syntax
+- Prefer `.mdx` only when components are required
+- Add client directives when hydration is needed
+
+See the [MDX docs](https://mdxjs.com/docs/what-is-mdx) for more.

@@ -1,0 +1,86 @@
+/**
+ * CWD Shadow DOM theme — aligned with 墨间 Ink Atelier tokens.
+ * Injected via customCssUrl into the widget shadow root.
+ * Docs: https://cwd.js.org/guide/frontend-config.html
+ */
+
+.cwd-comments-container,
+[data-theme='light'] {
+	--cwd-primary: #0b7a6f;
+	--cwd-primary-hover: #065a52;
+
+	--cwd-text: #1a1d24;
+	--cwd-text-secondary: #4a5160;
+
+	--cwd-bg: transparent;
+	--cwd-bg-input: #f7f8fb;
+	--cwd-bg-secondary: #eef1f5;
+	--cwd-bg-reply: #eef1f5;
+	--cwd-bg-hover: #e8edf3;
+	--cwd-bg-disabled: #eef1f5;
+	--cwd-bg-avatar: #e4e9f0;
+
+	--cwd-border: rgba(26, 29, 36, 0.14);
+	--cwd-border-light: rgba(26, 29, 36, 0.08);
+
+	--cwd-error: #c45c3a;
+	--cwd-bg-error: #f8ebe6;
+	--cwd-border-error: #e08a6a;
+
+	--cwd-radius: 2px;
+}
+
+[data-theme='dark'] {
+	--cwd-primary: #3dbaad;
+	--cwd-primary-hover: #7fd4cb;
+
+	--cwd-text: #e8ecf2;
+	--cwd-text-secondary: #a3adb9;
+
+	--cwd-bg: transparent;
+	--cwd-bg-input: #1a1f27;
+	--cwd-bg-secondary: #161b22;
+	--cwd-bg-reply: #161b22;
+	--cwd-bg-hover: #1e2430;
+	--cwd-bg-disabled: #161b22;
+	--cwd-bg-avatar: #222831;
+
+	--cwd-border: rgba(232, 236, 242, 0.14);
+	--cwd-border-light: rgba(232, 236, 242, 0.08);
+
+	--cwd-error: #e08a6a;
+	--cwd-bg-error: #3a221c;
+	--cwd-border-error: #c45c3a;
+}
+
+.cwd-container {
+	font-family:
+		'Source Sans 3',
+		'Noto Sans SC',
+		'PingFang SC',
+		'Hiragino Sans GB',
+		'Microsoft YaHei',
+		system-ui,
+		sans-serif !important;
+	font-size: 15px !important;
+	line-height: 1.75 !important;
+	background: transparent !important;
+}
+
+.cwd-header,
+.cwd-comments-header {
+	border-bottom-color: var(--cwd-border) !important;
+}
+
+.cwd-count,
+.cwd-comments-count {
+	font-family: 'Instrument Serif', 'Noto Serif SC', serif !important;
+	font-weight: 500 !important;
+	letter-spacing: 0.04em;
+}
+
+button,
+.cwd-btn,
+[class*='submit'] {
+	border-radius: var(--cwd-radius) !important;
+}

@@ -1,0 +1,188 @@
+---
+/**
+ * TradingView Advanced Chart — 默认 K 线（Candles）。
+ * 图表区域按容器宽度保持 4:3；直接嵌入 iframe，避免 loader 重复挂载。
+ *
+ * import TradingViewChart from '../../components/TradingViewChart.astro'
+ * <TradingViewChart symbol="BINANCE:BTCUSDT" interval="60" />
+ */
+interface Props {
+	/** 标的，如 NASDAQ:AAPL、BINANCE:BTCUSDT、SSE:600519 */
+	symbol: string;
+	/** K 线周期：1/5/15/30/60/240/D/W */
+	interval?: string;
+	/** TradingView locale，中文站建议 zh_CN */
+	locale?: string;
+	/** 时区，默认 Asia/Shanghai */
+	timezone?: string;
+	/** 是否允许在图表内切换标的 */
+	allowSymbolChange?: boolean;
+	/** 隐藏左侧工具栏 */
+	hideSideToolbar?: boolean;
+	/** 图表样式：1=蜡烛图(K线) 0=美国线 2=空心蜡烛 3=线形 … */
+	style?: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+}
+
+const {
+	symbol,
+	interval = 'D',
+	locale = 'zh_CN',
+	timezone = 'Asia/Shanghai',
+	allowSymbolChange = true,
+	hideSideToolbar = false,
+	style = '1',
+} = Astro.props;
+
+const symbolSlug = symbol.replace(':', '-');
+const creditHref = `https://www.tradingview.com/symbols/${symbolSlug}/?utm_source=mojian&utm_medium=widget&utm_campaign=advanced-chart`;
+---
+
+<figure
+	class="tv-chart"
+	data-tv-chart
+	data-symbol={symbol}
+	data-interval={interval}
+	data-locale={locale}
+	data-timezone={timezone}
+	data-style={style}
+	data-allow-symbol-change={allowSymbolChange ? '1' : '0'}
+	data-hide-side-toolbar={hideSideToolbar ? '1' : '0'}
+>
+	<div class="tv-chart__frame" data-tv-frame></div>
+	<figcaption class="tv-chart__credit">
+		<a href={creditHref} target="_blank" rel="noopener nofollow">{symbol}</a>
+		<span> · TradingView</span>
+	</figcaption>
+</figure>
+
+<script>
+	type Theme = 'light' | 'dark';
+
+	function currentTheme(): Theme {
+		return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+	}
+
+	function buildSrc(root: HTMLElement, theme: Theme): string {
+		const symbol = root.dataset.symbol ?? 'NASDAQ:AAPL';
+		const locale = root.dataset.locale ?? 'zh_CN';
+		const config = {
+			autosize: true,
+			width: '100%',
+			height: '100%',
+			symbol,
+			interval: root.dataset.interval ?? 'D',
+			timezone: root.dataset.timezone ?? 'Asia/Shanghai',
+			theme,
+			style: root.dataset.style ?? '1',
+			locale,
+			backgroundColor: theme === 'dark' ? 'rgba(18, 21, 26, 1)' : 'rgba(238, 241, 245, 1)',
+			gridColor: theme === 'dark' ? 'rgba(232, 236, 242, 0.08)' : 'rgba(26, 29, 36, 0.08)',
+			hide_top_toolbar: false,
+			hide_legend: false,
+			withdateranges: true,
+			hide_side_toolbar: root.dataset.hideSideToolbar === '1',
+			allow_symbol_change: root.dataset.allowSymbolChange === '1',
+			save_image: true,
+			calendar: false,
+			support_host: 'https://www.tradingview.com',
+		};
+
+		const url = new URL('https://www.tradingview-widget.com/embed-widget/advanced-chart/');
+		url.searchParams.set('locale', locale);
+		url.searchParams.set('symbol', symbol);
+		url.hash = encodeURIComponent(JSON.stringify(config));
+		return url.toString();
+	}
+
+	function mountChart(root: HTMLElement) {
+		const frame = root.querySelector<HTMLElement>('[data-tv-frame]');
+		if (!frame) return;
+
+		const theme = currentTheme();
+		const iframe = document.createElement('iframe');
+		iframe.src = buildSrc(root, theme);
+		iframe.title = root.dataset.symbol ?? 'TradingView chart';
+		iframe.setAttribute('frameborder', '0');
+		iframe.setAttribute('allowtransparency', 'true');
+		iframe.setAttribute('scrolling', 'no');
+		iframe.setAttribute('loading', 'lazy');
+		// 整框替换，保证始终只有一个 iframe
+		frame.replaceChildren(iframe);
+	}
+
+	function remountAll() {
+		document.querySelectorAll<HTMLElement>('[data-tv-chart]').forEach(mountChart);
+	}
+
+	function boot() {
+		const w = window as Window & { __mojianTv?: boolean };
+		if (w.__mojianTv) return;
+		w.__mojianTv = true;
+
+		remountAll();
+		window.addEventListener('mojian:theme', remountAll);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', boot, { once: true });
+	} else {
+		boot();
+	}
+</script>
+
+<style>
+	.tv-chart {
+		display: block;
+		width: 100%;
+		margin: 1.75em 0 0.5em;
+		padding: 0;
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		background: var(--surface);
+		overflow: hidden;
+	}
+
+	.tv-chart__frame {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+	}
+
+	.tv-chart__frame :global(iframe) {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		border: 0;
+	}
+
+	.tv-chart__credit {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.15rem;
+		height: 1.75rem;
+		padding: 0 0.75rem;
+		margin: 0;
+		font-size: 0.72rem;
+		letter-spacing: 0.04em;
+		color: var(--ink-faint);
+		background: var(--surface-elevated);
+		border-top: 1px solid var(--line);
+	}
+
+	.tv-chart__credit a {
+		color: var(--accent-ink);
+		text-decoration: none;
+	}
+
+	.tv-chart__credit a:hover {
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+	}
+
+	:global(.prose) .tv-chart {
+		max-width: none;
+	}
+</style>

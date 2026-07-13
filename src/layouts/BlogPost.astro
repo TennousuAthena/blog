@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Comments from '../components/Comments.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import TagList from '../components/TagList.astro';
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import { commentSlug } from '../lib/posts';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+	lang: Lang;
+}
+
+const { post, lang } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags = [] } = post.data;
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={title} description={description} image={heroImage} lang={lang}>
+	<article class="article">
+		<header class="article__header container--narrow">
+			<div class="article__meta anim-rise">
+				<FormattedDate date={pubDate} lang={lang} />
+				{
+					updatedDate && (
+						<span class="article__updated">
+							{t('updated')} <FormattedDate date={updatedDate} lang={lang} />
+						</span>
+					)
+				}
+			</div>
+			<h1 class="article__title anim-rise" style="animation-delay: 60ms">{title}</h1>
+			<p class="article__desc anim-rise" style="animation-delay: 120ms">{description}</p>
+			<div class="article__tags anim-rise" style="animation-delay: 180ms">
+				<TagList tags={tags} lang={lang} />
+			</div>
+			<span class="article__rule anim-fade" aria-hidden="true"></span>
+		</header>
+
+		{
+			heroImage && (
+				<figure class="article__hero container anim-fade" style="animation-delay: 160ms">
+					<Image width={1400} height={700} src={heroImage} alt="" />
+				</figure>
+			)
+		}
+
+		<div class="prose article__body anim-rise" style="animation-delay: 220ms">
+			<slot />
+		</div>
+
+		<Comments lang={lang} postSlug={commentSlug(post)} postTitle={title} />
+	</article>
+</BaseLayout>
+
+<style>
+	.article {
+		padding-top: var(--space-xl);
+	}
+
+	.article__header {
+		margin-inline: auto;
+		margin-bottom: var(--space-lg);
+	}
+
+	.article__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1.25rem;
+		margin-bottom: 1rem;
+		font-size: 0.9rem;
+		color: var(--ink-faint);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.article__updated {
+		color: var(--ink-muted);
+	}
+
+	.article__title {
+		margin-bottom: 0.65rem;
+	}
+
+	.article__desc {
+		margin: 0 0 1rem;
+		color: var(--ink-muted);
+		font-size: 1.08rem;
+		line-height: 1.75;
+	}
+
+	.article__rule {
+		display: block;
+		width: 3.5rem;
+		height: 2px;
+		margin-top: 1.5rem;
+		background: var(--accent);
+		transform-origin: left;
+		animation: draw-line var(--duration) var(--ease-out) 280ms both;
+	}
+
+	.article__hero {
+		margin: 0 auto var(--space-xl);
+	}
+
+	.article__hero img {
+		width: 100%;
+		max-height: 28rem;
+		object-fit: cover;
+		border-radius: 4px;
+		border: 1px solid var(--line);
+	}
+
+	.article__body {
+		padding-bottom: var(--space-md);
+	}
+</style>
