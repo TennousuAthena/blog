@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../consts';
+import { SITE, SITE_URL } from '../consts';
 import { useTranslations } from '../i18n/utils';
 
 const lang = 'zh' as const;
@@ -18,29 +18,24 @@ const t = useTranslations(lang);
 
 		<div class="prose about__body anim-rise" style="animation-delay: 180ms">
 			<p>
-				「墨间」关注中文阅读体验：衬线标题与无衬线正文成对出现，行高、字距与段落节奏按中文阅读习惯调整，并保留英文与代码混排的清晰度。
+				「奇异果网络日志」是我的个人博客，域名
+				<a href={SITE_URL}>{SITE_URL.replace(/^https?:\/\//, '')}</a>
+				。我会将探索路上遇见的想法、问题与结论随手记下来，再在回望时慢慢沉淀。
 			</p>
 			<p>
-				主题支持中英双语、日夜间切换，以及基于
-				<a href="https://cwd.js.org/" target="_blank" rel="noopener noreferrer">CWD</a>
-				的评论系统——评论区样式通过 customCss 与站点设计令牌对齐。
+				
 			</p>
-			<h2>你可以用它做什么</h2>
-			<ul>
-				<li>个人技术博客 / 设计笔记</li>
-				<li>团队设计系统与组件文档的轻量站点</li>
-				<li>中英双语内容的内容型作品集入口</li>
-			</ul>
-			<h2>技术栈</h2>
-			<ul>
-				<li>Astro + Content Collections + MDX + i18n</li>
-				<li>原生 CSS 设计令牌（日间 / 夜间）</li>
-				<li>CWD 评论（Cloudflare Workers）</li>
-			</ul>
+			<h2>关于写作</h2>
 			<p>
-				开始写作：在 <code>src/content/blog/</code> 新增 Markdown 或 MDX，填写
-				<code>lang</code> 与可选的 <code>translationKey</code> 即可。
+				这里的内容核心由我自己编写。句子上的打磨与整理，大多会借助生成式人工智能润色。
+				我会尽最大努力避免事实性错误。
 			</p>
+			<h2>你会读到什么</h2>
+			<ul>
+				<li>随记：即时的想法、草稿与现场感</li>
+				<li>记录：做过的事、踩过的坑、可复盘的过程</li>
+				<li>沉淀：整理之后仍想留下的结论与方法</li>
+			</ul>
 		</div>
 	</section>
 </BaseLayout>

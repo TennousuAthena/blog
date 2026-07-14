@@ -6,7 +6,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import TagList from '../components/TagList.astro';
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
-import { commentSlug } from '../lib/posts';
+import { commentSlug, postMarkdownPath } from '../lib/posts';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -17,9 +17,16 @@ interface Props {
 const { post, lang } = Astro.props;
 const { title, description, pubDate, updatedDate, heroImage, tags = [] } = post.data;
 const t = useTranslations(lang);
+const markdownUrl = postMarkdownPath(post, lang);
 ---
 
-<BaseLayout title={title} description={description} image={heroImage} lang={lang}>
+<BaseLayout
+	title={title}
+	description={description}
+	image={heroImage}
+	lang={lang}
+	markdownUrl={markdownUrl}
+>
 	<article class="article">
 		<header class="article__header container--narrow">
 			<div class="article__meta anim-rise">

@@ -25,6 +25,7 @@ const year = new Date().getFullYear();
 			<a href={localePath('/tags', lang)}>{t('nav.tags')}</a>
 			<a href={localePath('/about', lang)}>{t('nav.about')}</a>
 			<a href={SOCIAL.rss}>{t('nav.rss')}</a>
+			<a href="/llms.txt">llms.txt</a>
 			<a href={SOCIAL.github} target="_blank" rel="noopener noreferrer">GitHub</a>
 		</div>
 
@@ -46,16 +47,15 @@ const year = new Date().getFullYear();
 
 	.site-footer__name {
 		font-family: var(--font-display);
-		font-size: 1.65rem;
-		letter-spacing: 0.14em;
+		font-size: 1.35rem;
+		letter-spacing: 0.06em;
 		margin: 0;
 	}
 
 	.site-footer__en {
 		margin: 0.2rem 0 0;
 		font-size: 0.75rem;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
+		letter-spacing: 0.04em;
 		color: var(--ink-faint);
 	}
 

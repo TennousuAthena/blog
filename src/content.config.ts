@@ -3,7 +3,8 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const blog = defineCollection({
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
+	// retainBody 默认 true：构建时导出 /blog/*.md 与 llms.txt 需要原文
+	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}', retainBody: true }),
 	schema: ({ image }) =>
 		z.object({
 			title: z.string(),

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { SITE } from '../../consts';
+import { SITE, SITE_URL } from '../../consts';
 import { useTranslations } from '../../i18n/utils';
 
 const lang = 'en' as const;
@@ -18,29 +18,29 @@ const t = useTranslations(lang);
 
 		<div class="prose about__body anim-rise" style="animation-delay: 180ms">
 			<p>
-				Ink Atelier pairs expressive Latin display type with Noto CJK faces, tuned line-height, and
-				mixed-script rhythm so Chinese and English can share one reading surface.
+				Kiwi's web log is my personal blog at
+				<a href={SITE_URL}>{SITE_URL.replace(/^https?:\/\//, '')}</a>.
+				It is not a portfolio and not a tutorial site — more like an open notebook for notes,
+				records, and the slower work of reflection.
 			</p>
 			<p>
-				The theme ships with bilingual routing, light/dark tokens, and
-				<a href="https://cwd.js.org/" target="_blank" rel="noopener noreferrer">CWD</a>
-				comments — the widget theme is remapped to the same jade/mist palette via <code>customCssUrl</code>.
+				I use it to capture what I am thinking, what I have tried, and the fragments that are hard
+				to name in the moment but worth keeping. Some posts stay short; others grow. Completeness
+				is optional; honesty is not.
 			</p>
-			<h2>Use it for</h2>
+			<h2>On writing</h2>
+			<p>
+				The substance is written by me. Much of the sentence-level polishing is done with generative
+				AI — it helps clarify the wording; the ideas and choices remain mine.
+			</p>
+			<h2>What you will find</h2>
 			<ul>
-				<li>Personal craft blogs and design notes</li>
-				<li>Lightweight design-system documentation</li>
-				<li>Bilingual portfolio / writing hubs</li>
-			</ul>
-			<h2>Stack</h2>
-			<ul>
-				<li>Astro + Content Collections + MDX + i18n</li>
-				<li>CSS design tokens (light / dark)</li>
-				<li>CWD comments on Cloudflare Workers</li>
+				<li>Notes — immediate thoughts, drafts, and field marks</li>
+				<li>Records — attempts, mistakes, and processes worth revisiting</li>
+				<li>Reflection — conclusions and methods that still feel worth keeping</li>
 			</ul>
 			<p>
-				Write in <code>src/content/blog/</code> with <code>lang</code> and optional
-				<code>translationKey</code> so locales share one comment thread.
+				If a piece helps you too, welcome. If it only helps me settle a thought, that is enough.
 			</p>
 		</div>
 	</section>

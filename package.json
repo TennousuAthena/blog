@@ -1,5 +1,5 @@
 {
-  "name": "mojian-ink-atelier",
+  "name": "blog-kiwi-moe",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/verify-llm-artifacts.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "cwd:mock": "node scripts/cwd-mock-api.mjs"

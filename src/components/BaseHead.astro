@@ -13,6 +13,8 @@ interface Props {
 	image?: ImageMetadata;
 	lang?: Lang;
 	ogLocale?: string;
+	/** 页面 Markdown 备用地址（绝对或站点内路径） */
+	markdownUrl?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -22,8 +24,12 @@ const {
 	image = FallbackImage,
 	lang = 'zh',
 	ogLocale = lang === 'zh' ? 'zh_CN' : 'en_US',
+	markdownUrl,
 } = Astro.props;
 const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
+const markdownHref = markdownUrl
+	? new URL(markdownUrl, Astro.site).href
+	: undefined;
 ---
 
 <meta charset="utf-8" />
@@ -38,6 +44,11 @@ const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
 	title={SITE_TITLE}
 	href={new URL('rss.xml', Astro.site)}
 />
+{
+	markdownHref && (
+		<link rel="alternate" type="text/markdown" title="Markdown" href={markdownHref} />
+	)
+}
 <link rel="alternate" hreflang="zh-CN" href={new URL(Astro.url.pathname.replace(/^\/en/, '') || '/', Astro.site)} />
 <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? Astro.url.pathname : `/en${Astro.url.pathname === '/' ? '/' : Astro.url.pathname}`, Astro.site)} />
 <meta name="generator" content={Astro.generator} />

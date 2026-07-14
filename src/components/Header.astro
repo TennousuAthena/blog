@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE, SITE_TITLE_EN, SOCIAL } from '../consts';
+import { SITE_MARK, SITE_TITLE, SITE_TITLE_EN, SOCIAL } from '../consts';
 import type { Lang } from '../i18n/ui';
 import { localePath, useTranslations } from '../i18n/utils';
 import HeaderLink from './HeaderLink.astro';
@@ -24,7 +24,7 @@ const links = [
 <header class="site-header">
 	<div class="site-header__inner container">
 		<a class="brand" href={localePath('/', lang)} aria-label={`${SITE_TITLE} ${SITE_TITLE_EN}`}>
-			<span class="brand__mark" aria-hidden="true">墨</span>
+			<span class="brand__mark" aria-hidden="true">{SITE_MARK}</span>
 			<span class="brand__text">
 				<span class="brand__zh">{SITE_TITLE}</span>
 				<span class="brand__en">{SITE_TITLE_EN}</span>
@@ -126,14 +126,13 @@ const links = [
 
 	.brand__zh {
 		font-family: var(--font-display);
-		font-size: 1.2rem;
-		letter-spacing: 0.12em;
+		font-size: 1.05rem;
+		letter-spacing: 0.06em;
 	}
 
 	.brand__en {
 		font-size: 0.68rem;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
+		letter-spacing: 0.04em;
 		color: var(--ink-faint);
 	}
 
