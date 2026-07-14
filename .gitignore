@@ -35,3 +35,5 @@ public/admin/
 tmp/
 # CWD API secrets (never commit wrangler.jsonc with real bindings/secrets)
 backend/wrangler.jsonc
+# CNB secrets (密钥仓库文件，绝不入库)
+.cnb/secrets.yml

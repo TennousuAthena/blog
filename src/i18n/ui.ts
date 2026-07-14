@@ -46,6 +46,9 @@ export const ui = {
 		'comments.setup':
 			'评论系统基于 CWD。请部署你的 Cloudflare Workers API，并在环境变量中设置 PUBLIC_CWD_API_BASE_URL。',
 		'comments.docs': '查看 CWD 文档',
+		'404.title': '404',
+		'404.message': '页面不存在，或已被移动。',
+		'404.home': '回到首页 →',
 	},
 	en: {
 		'nav.home': 'Home',
@@ -86,6 +89,9 @@ export const ui = {
 		'comments.title': 'Comments',
 		'comments.setup':
 			'Comments run on CWD. Deploy your Cloudflare Workers API and set PUBLIC_CWD_API_BASE_URL.',
+		'404.title': '404',
+		'404.message': 'Page not found, or it may have moved.',
+		'404.home': 'Back to home →',
 		'comments.docs': 'CWD docs',
 	},
 } as const;

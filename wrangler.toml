@@ -13,5 +13,6 @@ BOOTSTRAP_NONCE = ""
 SETUP_UNTIL = ""
 # Runtime secret names (typed as string; values injected at deploy time):
 NOTION_TOKEN = ""
-CLOUDFLARE_DEPLOY_HOOK_URL = ""
+CNB_API_TOKEN = ""
+CNB_REPO = ""
 NOTION_WEBHOOK_VERIFICATION_SECRET = ""

@@ -4,7 +4,8 @@
 interface __BaseEnv_Env {
 	BOOTSTRAP_NONCE: string;
 	SETUP_UNTIL: string;
-	CLOUDFLARE_DEPLOY_HOOK_URL: string;
+	CNB_API_TOKEN: string;
+	CNB_REPO: string;
 	NOTION_WEBHOOK_VERIFICATION_SECRET: string;
 	SITE: string;
 	PUBLIC_CWD_API_BASE_URL: string;

@@ -1,0 +1,42 @@
+main:
+  push:
+    - name: build-and-deploy
+      docker:
+        image: node:22
+      env:
+        PUBLIC_CWD_API_BASE_URL: https://blog.kiwi.moe/api/cwd
+        PUBLIC_CWD_SITE_ID: mojian
+        SITE: https://blog.kiwi.moe
+      imports:
+        - https://cnb.cool/kiwimoe/blog/-/blob/main/.cnb/secrets.yml
+      stages:
+        - name: install
+          script: npm install
+        - name: build-admin
+          script: npm run build:admin
+        - name: build-site
+          script: npx astro build && node scripts/verify-llm-artifacts.mjs
+        - name: deploy
+          script: npx wrangler pages deploy dist --project-name blog-kiwi-moe
+
+  api_trigger_notion:
+    - name: notion-sync-deploy
+      docker:
+        image: node:22
+      env:
+        PUBLIC_CWD_API_BASE_URL: https://blog.kiwi.moe/api/cwd
+        PUBLIC_CWD_SITE_ID: mojian
+        SITE: https://blog.kiwi.moe
+      imports:
+        - https://cnb.cool/kiwimoe/blog/-/blob/main/.cnb/secrets.yml
+      stages:
+        - name: install
+          script: npm install
+        - name: sync-notion
+          script: npm run sync:notion
+        - name: build-admin
+          script: npm run build:admin
+        - name: build-site
+          script: npx astro build && node scripts/verify-llm-artifacts.mjs
+        - name: deploy
+          script: npx wrangler pages deploy dist --project-name blog-kiwi-moe

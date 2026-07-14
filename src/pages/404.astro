@@ -1,0 +1,144 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BaseHead from '../components/BaseHead.astro';
+import MermaidTheme from '../components/MermaidTheme.astro';
+import { useTranslations, localePath, htmlLang } from '../i18n/utils';
+import { ui, defaultLang, type Lang } from '../i18n/ui';
+
+// Build with default locale (zh). Client-side script detects language
+// from window.location.pathname and swaps text for /en/* paths.
+const lang: Lang = defaultLang;
+const t = useTranslations(lang);
+
+// Pre-render both locale strings as data attributes for client-side swap
+const zh = ui.zh;
+const en = ui.en;
+---
+
+<!doctype html>
+<html lang={htmlLang(lang)}>
+	<head>
+		<BaseHead
+			title={`${t('404.title')} — 奇异果网络日志`}
+			description={t('404.message')}
+			lang={lang}
+		/>
+		<meta name="robots" content="noindex" />
+	</head>
+	<body>
+		<a class="skip-link" href="#main">{t('skip')}</a>
+		<Header lang={lang} />
+		<main id="main">
+			<div class="not-found" data-zh-message={zh['404.message']} data-en-message={en['404.message']} data-zh-home={zh['404.home']} data-en-home={en['404.home']}>
+				<div class="not-found__inner container--narrow">
+					<p class="not-found__code">404</p>
+					<p class="not-found__message">{t('404.message')}</p>
+					<a class="not-found__link" href={localePath('/', lang)}>{t('404.home')}</a>
+				</div>
+			</div>
+		</main>
+		<Footer lang={lang} />
+		<MermaidTheme />
+
+		<script is:inline>
+			(function () {
+				var path = window.location.pathname;
+				var isEn = path.startsWith('/en/') || path === '/en';
+				if (!isEn) return;
+
+				var root = document.querySelector('.not-found');
+				if (!root) return;
+
+				document.documentElement.lang = 'en';
+
+				var msg = root.getAttribute('data-en-message');
+				var home = root.getAttribute('data-en-home');
+				var msgEl = root.querySelector('.not-found__message');
+				var linkEl = root.querySelector('.not-found__link');
+				if (msgEl && msg) msgEl.textContent = msg;
+				if (linkEl && home) {
+					linkEl.textContent = home;
+					linkEl.setAttribute('href', '/en/');
+				}
+			})();
+		</script>
+	</body>
+</html>
+
+<style>
+	.skip-link {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+		color: var(--paper);
+		background: var(--ink);
+		text-decoration: none;
+		border-radius: var(--radius);
+	}
+
+	.skip-link:focus {
+		position: fixed;
+		top: 1rem;
+		left: 1rem;
+		z-index: 1000;
+		width: auto;
+		height: auto;
+		margin: 0;
+		padding: 0.5rem 0.85rem;
+		overflow: visible;
+		clip: auto;
+		white-space: normal;
+	}
+
+	.not-found {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 60vh;
+		padding: var(--space-2xl) 0;
+	}
+
+	.not-found__inner {
+		text-align: center;
+	}
+
+	.not-found__code {
+		font-family: var(--font-display);
+		font-size: clamp(5rem, 20vw, 9rem);
+		font-weight: 400;
+		line-height: 1;
+		letter-spacing: -0.02em;
+		color: var(--accent);
+		margin: 0 0 var(--space-md);
+	}
+
+	.not-found__message {
+		font-size: 1.1rem;
+		color: var(--ink-muted);
+		margin: 0 0 var(--space-lg);
+	}
+
+	.not-found__link {
+		display: inline-block;
+		color: var(--accent-ink);
+		text-decoration: none;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		border-bottom: 2px solid var(--accent);
+		padding-bottom: 2px;
+		transition: color var(--duration) var(--ease-out),
+			border-color var(--duration) var(--ease-out);
+	}
+
+	.not-found__link:hover {
+		color: var(--accent);
+		border-color: var(--accent-ink);
+	}
+</style>

@@ -109,20 +109,31 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return new Response(null, { status: 202 });
   }
 
-  const hookUrl = env.CLOUDFLARE_DEPLOY_HOOK_URL ?? '';
-  if (!hookUrl.startsWith('https:')) {
+  const cnbToken = env.CNB_API_TOKEN ?? '';
+  const cnbRepo = env.CNB_REPO ?? 'kiwimoe/blog';
+  if (!cnbToken.startsWith('cnb_')) {
     return new Response('Service Unavailable', { status: 503 });
   }
 
   try {
-    const res = await fetch(hookUrl, { method: 'POST', headers: { 'content-type': 'application/json' } });
+    const res = await fetch(`https://api.cnb.cool/${cnbRepo}/-/build/start`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${cnbToken}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        branch: 'main',
+        event: 'api_trigger_notion',
+        title: `Notion webhook: ${event.type}`,
+      }),
+    });
     if (res.ok) return new Response(null, { status: 202 });
     if (res.status === 408 || res.status === 429 || res.status >= 500) {
       return new Response('Bad Gateway', { status: 502 });
     }
-    // Permanent 4xx from the hook: accept but do not trigger a deploy.
-    const cfRay = res.headers.get('cf-ray') ?? 'unavailable';
-    console.log(`deploy hook rejected: status=${res.status} cf-ray=${cfRay}`);
+    console.log(`cnb build trigger rejected: status=${res.status}`);
     return new Response(null, { status: 204 });
   } catch {
     return new Response('Bad Gateway', { status: 502 });
