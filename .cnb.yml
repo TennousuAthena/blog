@@ -15,7 +15,10 @@ main:
         - name: build-admin
           script: npm run build:admin
         - name: build-site
-          script: npx astro build && node scripts/verify-llm-artifacts.mjs
+          script: |
+            npx astro build && node scripts/verify-llm-artifacts.mjs
+            node -e "const fs=require('fs'); const info={buildTime:new Date().toISOString(),gitCommit:process.env.CNB_COMMIT_SHA||'unknown',gitBranch:process.env.CNB_BRANCH||'main',nodeVersion:process.version}; fs.writeFileSync('dist/build.info',JSON.stringify(info,null,2)+'\n')"
+            cat dist/build.info
         - name: deploy
           script: npx wrangler pages deploy dist --project-name blog-kiwi-moe
 
@@ -45,6 +48,9 @@ main:
         - name: build-admin
           script: npm run build:admin
         - name: build-site
-          script: npx astro build && node scripts/verify-llm-artifacts.mjs
+          script: |
+            npx astro build && node scripts/verify-llm-artifacts.mjs
+            node -e "const fs=require('fs'); const info={buildTime:new Date().toISOString(),gitCommit:process.env.CNB_COMMIT_SHA||'unknown',gitBranch:process.env.CNB_BRANCH||'main',nodeVersion:process.version}; fs.writeFileSync('dist/build.info',JSON.stringify(info,null,2)+'\n')"
+            cat dist/build.info
         - name: deploy
           script: npx wrangler pages deploy dist --project-name blog-kiwi-moe
