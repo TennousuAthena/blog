@@ -1,0 +1,6 @@
+branch:
+  - buttons:
+      - name: 构建并部署
+        description: 构建博客并部署到 Cloudflare Pages
+        event: web_trigger_deploy
+        isDefault: true

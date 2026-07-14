@@ -2,17 +2,10 @@ name = "mojian-ink-atelier"
 compatibility_date = "2026-07-13"
 pages_build_output_dir = "dist"
 
-# Pages Functions runtime bindings (values supplied as encrypted vars/secrets in
-# the Cloudflare dashboard; declared here only so `wrangler types` emits a stable
-# `Env` interface for `functions/types.d.ts`). Do NOT put real secrets in this file.
+# Pages Functions runtime bindings — values are injected as encrypted secrets
+# via `wrangler pages secret put` or the Cloudflare dashboard. Declared here
+# only so `wrangler types` emits a stable `Env` interface for functions/types.d.ts.
+# Do NOT put real secret values in this file.
 [vars]
 NOTION_DATA_SOURCE_ID = ""
-SITE = "http://localhost:4321"
-# Bootstrap-only bindings (removed after verification completes):
-BOOTSTRAP_NONCE = ""
-SETUP_UNTIL = ""
-# Runtime secret names (typed as string; values injected at deploy time):
-NOTION_TOKEN = ""
-CNB_API_TOKEN = ""
-CNB_REPO = ""
-NOTION_WEBHOOK_VERIFICATION_SECRET = ""
+SITE = "https://blog.kiwi.moe"

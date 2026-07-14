@@ -19,8 +19,8 @@ main:
         - name: deploy
           script: npx wrangler pages deploy dist --project-name blog-kiwi-moe
 
-  api_trigger_notion:
-    - name: notion-sync-deploy
+  web_trigger_deploy:
+    - name: manual-deploy
       docker:
         image: node:22
       env:

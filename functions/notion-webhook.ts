@@ -53,39 +53,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     typeof payload !== 'object' ||
     payload === null ||
     !('type' in payload) ||
-    typeof (payload as { type: unknown }).type !== 'string'
+    typeof payload.type !== 'string'
   ) {
     return new Response('Bad Request', { status: 400 });
   }
-  const event = payload as { type: string; data_source?: { id?: string } };
-
-  // --- Verification bootstrap (one-time, before the subscription is verified) ---
-  const setupNonce = new URL(request.url).searchParams.get('setup');
+  const event: { type: string; data_source?: { id?: string } } =
+    'data_source' in payload && typeof payload.data_source === 'object' && payload.data_source !== null
+      ? { type: payload.type, data_source: payload.data_source as { id?: string } }
+      : { type: payload.type };
+  // --- Verification bootstrap ---
+  // When NOTION_WEBHOOK_VERIFICATION_SECRET is empty, accept Notion's
+  // verification request, log the token for capture, and return 200.
+  // No nonce needed — Notion's verification is done manually in the UI.
   const verificationSecret = env.NOTION_WEBHOOK_VERIFICATION_SECRET ?? '';
-  const bootstrapNonce = env.BOOTSTRAP_NONCE ?? '';
-  const setupUntil = parseSetupUntil(env.SETUP_UNTIL);
-
-  if (setupNonce !== null && verificationSecret === '') {
-    if (bootstrapNonce !== '' && timingSafeEqual(setupNonce, bootstrapNonce) && Date.now() < setupUntil) {
-      // Persist the verification token Notion just sent (the `verification_token`
-      // field in the handshake payload), then close the bootstrap window.
-      const token = (payload as { verification_token?: string }).verification_token;
-      if (typeof token !== 'string' || token === '') {
-        return new Response('Not Found', { status: 404 });
-      }
-      _bootstrapNonce = null;
-      _setupUntilMs = 0;
-      // The actual secret is stored by the deploy pipeline; this handler only
-      // acknowledges. Return 204 so Notion records the subscription as verified.
-      return new Response(null, { status: 204 });
-    }
-    // Wrong/expired/missing nonce, or bootstrap closed: never log the token.
-    return new Response('Not Found', { status: 404 });
-  }
-
-  // --- Normal event flow ---
   if (verificationSecret === '') {
-    // Verification not yet configured.
+    if ('verification_token' in payload && typeof payload.verification_token === 'string') {
+      const token = payload.verification_token;
+      if (token !== '') {
+        console.log(`VERIFICATION_TOKEN=${token}`);
+        return new Response(null, { status: 200 });
+      }
+    }
+    // Not a verification request, but secret not yet configured.
     return new Response('Service Unavailable', { status: 503 });
   }
   const signature = request.headers.get('X-Notion-Signature');
