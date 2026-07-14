@@ -8,7 +8,7 @@ main:
         PUBLIC_CWD_SITE_ID: mojian
         SITE: https://blog.kiwi.moe
       imports:
-        - https://cnb.cool/kiwimoe/blog/-/blob/main/.cnb/secrets.yml
+        - https://cnb.cool/kiwimoe/secrets/-/blob/main/blog.yml
       stages:
         - name: install
           script: npm install
@@ -28,7 +28,7 @@ main:
         PUBLIC_CWD_SITE_ID: mojian
         SITE: https://blog.kiwi.moe
       imports:
-        - https://cnb.cool/kiwimoe/blog/-/blob/main/.cnb/secrets.yml
+        - https://cnb.cool/kiwimoe/secrets/-/blob/main/blog.yml
       stages:
         - name: install
           script: npm install
