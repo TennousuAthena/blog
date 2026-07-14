@@ -1,0 +1,24 @@
+{
+  "name": "cwd-admin",
+  "version": "0.1.13",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@phosphor-icons/vue": "^2.2.1",
+    "echarts": "^5.5.0",
+    "vue": "^3.5.13",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "less": "^4.5.1",
+    "typescript": "^5.5.2",
+    "vite": "^6.0.11",
+    "vue-tsc": "^2.1.10"
+  }
+}

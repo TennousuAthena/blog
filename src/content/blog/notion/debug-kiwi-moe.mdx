@@ -1,0 +1,82 @@
+---
+title: debug.kiwi.moe：浏览器与网络诊断页
+description: debug.kiwi.moe 是面向开发者的浏览器与网络诊断工具页，聚合浏览器指纹、能力检测（如 Cookie、WebGL、WASM
+  等）以及网络信息（公网 IPv4/IPv6、DNS 出口、RTT、Warp、威胁指数、POP 等），通过 Vue3+TypeScript 前端和
+  Cloudflare Pages Functions 后端实现，提供紧凑概览与弹层详情、主题切换、截图与一键复制功能，帮助快速定位浏览器状态和网络路径问题。
+pubDate: 2026-07-13T00:00:00.000Z
+updatedDate: 2026-07-13T17:53:00.000Z
+tags:
+  - Browser
+  - Open Source
+featured: false
+lang: zh
+translationKey: debug-kiwi-moe
+heroImage: ./assets/39be7bf2-2f4d-802c-af87-e612935b810f/cover-178fabb49e28.png
+---
+我利用Cursor \+ Grok 4.5 构建了[debug.kiwi.moe](http://debug.kiwi.moe/)， 这个站目的很简单。专业开发者经常要确认当前浏览器到底是什么状态、网络出口和 DNS 是否正常、某个站点能不能连上。这个页面把这些信息集中在一张诊断页里，打开就能看，不用自己临时拼脚本。
+
+这个站不是给普通用户看的科普页面，而是给开发者和排查问题的人用的工具页。因为页面会直接展示 IP、地理位置、浏览器指纹、能力开关、连通性延迟这类偏敏感的信息，所以截图和复制前都加了隐私确认。
+
+下面从头讲这个站是怎么搭起来的，用了什么，以及里面几个基础名词分别指什么。
+
+## 这个站要解决什么问题
+
+前端排查问题时的需求大致分成两块。一块在浏览器侧，要确认操作系统和浏览器的识别是否准确，Cookie、localStorage、WebGL、WebRTC、WASM、Service Worker 是否可用，GPU 名称是什么，有没有可用的访客指纹标识。这些信息分散在 `navigator`、Web API 和第三方指纹库里，平时逐个去查很麻烦。
+
+另一块在网络侧，要弄清楚公网 IPv4 和 IPv6 分别是什么，DNS 实际出口落在哪里，Cloudflare Warp 是否开启，威胁指数大约多少，到 Cloudflare 各个 POP 的 RTT 怎样，国内外常见站点能不能连通，当前下载速度大概多少。这些同样要调用多个公开接口，或者在浏览器里做探测。
+
+debug.kiwi.moe 把这两块内容合并到一页里。主界面尽量做得紧凑，详细的探测结果放进弹层，避免一打开就铺满表格。
+
+## 技术栈怎么选
+
+前端主体用 Vue 3 加 TypeScript，构建工具选 Vite，包管理用 Bun。选这套组合主要是开发反馈快，单页工具站也够用，没必要上复杂的路由和状态管理框架。
+
+页面组件按诊断模块拆开，例如 IP、DNS、浏览器、Warp、威胁指数、POP、域名连通、测速。公共展示交给 Panel、Tip、DetailModal 这类小组件。业务请求和探测逻辑放在 `src/services`，类型集中在 `src/types.ts`，诊断报告的汇总放在 composable 里，这样一键复制时取数方便。
+
+部署目标是 Cloudflare Pages，静态资源来自 Vite 打出来的 `dist`。有些数据浏览器端拿不到，或者存在跨域限制，就用 Pages Functions 做一层薄代理，比如 Cloudflare 请求上下文里的威胁相关字段、网易 DNS 出口探测、多源 IP 查询聚合。本地开发时，Vite 中间件会模拟这些接口，不部署也能联调。
+
+样式没有用大型 UI 库，而是用站点自己的 CSS 变量维护浅色和深色两套主题，并支持跟随系统。这样页面体积小，主题切换也直接。
+
+## 页面结构与交互
+
+整页是一个诊断看板。顶部是站点名和操作区，可以切换主题、截图、复制诊断文本，下面按模块展示结果。
+
+很多模块采用摘要加详情两层结构。摘要只放最关键的一两行，详情用宽弹层展开完整表格或多源结果。IP 模块是 IPv4 和 IPv6 两行摘要，点开能看到多源 HTTP 查询和 WebRTC STUN 结果。DNS 模块给出内地和国际各一条代表出口，点开看全部探测来源。浏览器模块在摘要里展示常用能力，点开能看到更完整的字段，以及 FingerprintJS 的 Visitor ID 和 Entropy 组件。
+
+名词的悬停提示用 Tip 组件做延迟说明，既能解释术语又不占版面。Esc 可以关闭弹层。截图会先提示隐私风险，确认后再导出；复制诊断信息同样有确认和预览。
+
+## 浏览器信息是怎么来的
+
+操作系统和浏览器名称主要交给 `ua-parser-js` 解析 `navigator.userAgent`。在支持 Client Hints 的 Chromium 系浏览器上，还会走 `withClientHints()`，尽量拿到更可靠的平台和品牌信息。Brave 经常把自己报成 Chrome，所以额外用 `navigator.brave` 做一次覆盖判定。
+
+操作系统和浏览器名称前面会配品牌矢量图标，主要来自 simple\-icons。Windows 和 Edge 这类图标因为商标原因在 simple\-icons 里拿不到，就用 `@mdi/js` 补。Electron 也单独做了映射，避免被当成普通 Chrome。
+
+能力类字段，比如 Cookie、WebGL、WebRTC、WASM、Service Worker、PDF 查看器，直接读浏览器 API 做探测。结果归成开启、部分支持、未知、不支持这几类状态，配上从绿到红的小图标，扫一眼就能看出哪里异常。Service Worker 在非安全上下文里会标成部分支持，因为它通常需要 HTTPS。
+
+FingerprintJS 用来生成开源版的 Visitor identifier，并展开 Entropy components。Visitor ID 前面用 identicon.js 根据哈希生成头像，文字颜色也取同一套前景色，让标识更直观。canvas 相关的熵源如果带 base64 图，会直接渲染成预览，而不是只丢一大串字符串。
+
+## 网络诊断里几个基础名词
+
+IP 地址是设备访问公网时的出口编号。页面会分别探测 IPv4 和 IPv6。如果某一栈探测失败，会明确显示未开启，而不是留空让人猜。IPv6 探测改成多源并行竞速，减少其实有 IPv6 却因为单个接口慢或被拦而误判成没有的情况。
+
+DNS 出口指的是你发起域名解析时，真正替你去问权威或递归链路的那一侧解析器地址，它不一定等于你的公网 IP。页面通过网易 nstool、BrowserLeaks、[bash.ws](http://bash.ws/) 这类泄漏检测手法，再配合 ipapi 补充地理信息，把多条出口结果列出来。摘要里只保留内地和国际各一条，详情里保留全部来源，并把国内、国际和具体服务名拆成独立标签。
+
+RTT 是往返时延，大致表示请求发出到收到响应花了多久。域名连通测试会给一批国内外站点测可达性和耗时，用颜色表达快慢：低延迟偏绿，升高后过渡到琥珀色，很高或失败偏红。测速是下载 Cloudflare 固定大小样本来估算下行吞吐，单位常用 Mbps。为了减少缓存干扰，下载地址会带随机 query。页面默认测较小样本，也提供 100MiB 的手动测速按钮。
+
+Cloudflare Warp 是把流量接入 Cloudflare 网络的客户端功能，可能改变出口和路径。页面会从 Cloudflare 的 trace 信息里读 Warp 相关标记。威胁指数尽量读取边缘侧对来源 IP 的风险评分；这项更依赖部署在 Cloudflare 上的 Functions，本地环境通常只能给占位说明。
+
+POP 可以理解成边缘节点所在的机房。页面会测到若干 Cloudflare 相关节点的 HTTP RTT，帮助判断当前链路更靠近哪一类入口。
+
+WebRTC 探测公网 IP 时走 STUN。它和普通 HTTPS 查 IP 不是同一条路径，所以有时能发现 HTTP 出口和 UDP 反射地址不一致的情况，这对理解代理、VPN 或分流很有用。
+
+## 关键实现方式
+
+多数探测在浏览器里直接跑。能 CORS 访问的公开接口就直接 `fetch`。需要服务端视野或要绕过浏览器跨域限制的，走 `/api/*` 的 Pages Functions，本地由 Vite 中间件顶上。
+
+DNS 出口不能只靠普通 DoH 查一个业务域名，因为那样看到的是解析结果，而不是你的 DNS 出口。泄漏检测的思路是让浏览器解析一批几乎不可能命中缓存的唯一子域名，权威侧记下前来查询的解析器 IP，再把这些 IP 返回给页面。
+
+截图用 `html-to-image` 把当前诊断页导出成 PNG。实现上会先克隆页面、关闭动画和变换，并去掉跨域 favicon 以解决跨域问题，同时限制画布尺寸，避免页面太高时超出浏览器 canvas 上限导致失败。
+
+主题默认跟随系统，也可手动切浅色或深色，偏好存在 `localStorage`。截图背景色按当前主题取对应底色。
+
+诊断报告从统一的 diagnostics 状态里格式化成可复制文本，保证复制内容和当前探测结果一致。

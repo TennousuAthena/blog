@@ -1,0 +1,31 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cwd-api",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-01-03",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": true,
+	"preview_urls": true,
+	"account_id": "your-account-id",
+	"send_email": [
+		{
+			"name": "SEND_EMAIL"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "CWD_DB",
+			"database_name": "blog-kiwi-moe",
+			"database_id": "your-d1-database-id",
+			"remote": true
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "CWD_AUTH_KV",
+			"id": "your-kv-namespace-id"
+		}
+	]
+}
